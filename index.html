@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEON BRUTALIST BAR // AUTOMATIC JUKEBOX</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --neon-pink: #ff00ff;
+            --neon-blue: #00f0ff;
+            --neon-green: #39ff14;
+            --neon-yellow: #fff01f;
+            --white: #ffffff;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            cursor: crosshair; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--white);
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            border: 10px solid var(--neon-pink);
+            overflow-x: hidden;
+        }
+
+        /* Ajuste para mobile */
+        @media (max-width: 768px) {
+            body {
+                border-width: 5px;
+            }
+        }
+
+        header {
+            background: var(--neon-blue);
+            color: black;
+            padding: 20px 15px;
+            border-bottom: 5px solid black;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 10px;
+            }
+            
+            header h1 {
+                font-size: 10vw !important;
+                line-height: 1 !important;
+            }
+        }
+
+        /* Painel de Controles Giratórios - MOBILE FIRST */
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            padding: 15px 10px;
+            background: black;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--white);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .control-panel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .neon-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: rotateBtn 4s linear infinite;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1.1;
+            flex-shrink: 0;
+            padding: 5px;
+            touch-action: manipulation;
+        }
+
+        @media (max-width: 480px) {
+            .neon-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 0.6rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .neon-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 0.55rem;
+            }
+        }
+
+        .btn-play { border-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+        .btn-stop { border-color: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); animation-duration: 3s; }
+        .btn-next { border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); animation-duration: 5s; }
+        .btn-all { border-color: var(--neon-yellow); box-shadow: 0 0 10px var(--neon-yellow); color: var(--neon-yellow); animation-duration: 2s;}
+
+        @keyframes rotateBtn { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+
+        /* Reduzir animação para melhor performance mobile */
+        @media (prefers-reduced-motion: reduce) {
+            .neon-btn {
+                animation: none;
+            }
+        }
+
+        .marquee {
+            background: var(--neon-yellow);
+            color: black;
+            padding: 10px 5px;
+            font-weight: 900;
+            border-bottom: 3px solid black;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        @media (max-width: 480px) {
+            .marquee {
+                font-size: 0.8rem;
+                padding: 8px 5px;
+            }
+        }
+
+        /* Grid de Vídeos - Mobile First */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 8px;
+            }
+        }
+
+        .video-box {
+            border: 3px solid black;
+            background: #0a0a0a;
+            padding: 15px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .video-box.highlight {
+            outline: 5px solid var(--neon-green);
+            z-index: 10;
+        }
+
+        .drink-name {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            background: white;
+            color: black;
+            display: block;
+            padding: 8px;
+            text-align: center;
+            box-shadow: 4px 4px 0px var(--neon-pink);
+            word-break: break-word;
+        }
+
+        @media (max-width: 480px) {
+            .drink-name {
+                font-size: 1rem;
+                padding: 6px;
+                margin-bottom: 8px;
+            }
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: 2px solid white;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Rodapé de Advertência */
+        footer {
+            padding: 30px 15px;
+            background: #ff0000;
+            color: white;
+            text-align: center;
+            border-top: 5px solid black;
+        }
+
+        @media (max-width: 768px) {
+            footer {
+                padding: 20px 10px;
+            }
+        }
+
+        .warning-box {
+            border: 3px dashed white;
+            padding: 15px;
+            display: inline-block;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .warning-box h2 {
+                font-size: 1.3rem !important;
+            }
+            
+            .warning-box p {
+                font-size: 0.9rem !important;
+                line-height: 1.3;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .warning-box {
+                padding: 10px;
+            }
+            
+            .warning-box h2 {
+                font-size: 1.1rem !important;
+                margin-bottom: 8px !important;
+            }
+            
+            .warning-box p {
+                font-size: 0.8rem !important;
+            }
+        }
+
+        /* Ajustes para iPhone/Safari */
+        @supports (-webkit-touch-callout: none) {
+            .neon-btn {
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 style="font-size: clamp(2rem, 8vw, 4rem); line-height: 1.1;">NEON BAR<br>JUKEBOX</h1>
+    </header>
+
+    <div class="control-panel">
+        <button class="neon-btn btn-play" onclick="globalAction('play')">PLAY<br>▶️</button>
+        <button class="neon-btn btn-stop" onclick="globalAction('stop')">STOP<br>⏹️</button>
+        <button class="neon-btn btn-next" onclick="changeTrack(-1)">PREV<br>⏮️</button>
+        <button class="neon-btn btn-next" onclick="changeTrack(1)">NEXT<br>⏭️</button>
+        <button class="neon-btn btn-all" onclick="playAllSequential()">ALL 38<br>🔄</button>
+    </div>
+
+    <div class="marquee">
+        <marquee scrollamount="8">AUTO-STOP ACTIVATED // ONE DRINK AT A TIME // 38 SHOTS OF POST-PUNK // SYSTEM OVERRIDE</marquee>
+    </div>
+
+    <div class="container" id="playlist">
+        <!-- Vídeos serão injetados aqui -->
+    </div>
+
+    <footer>
+        <div class="warning-box">
+            <h2 style="font-size: 1.5rem; margin-bottom: 10px;">⚠️ ADVERTÊNCIA DO BARMAN ⚠️</h2>
+            <p style="font-size: 1rem;">CONSUMA O PÓS-PUNK COM MODERAÇÃO. SE VOCÊ ENTRAR NO TRANSE DO BAIXO DISTORCIDO, NÃO DIRIJA SUA MÁQUINA DO TEMPO. CURTIR JOY DIVISION EM EXCESSO PODE CAUSAR EXISTENCIALISMO AGUDO. BEBA MÚSICA, NÃO ÓDIO.</p>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.8rem;">VOID BAR © 2026 - TODOS OS DIREITOS RESERVADOS AO CAOS.</p>
+    </footer>
+
+    <script>
+        const videoIds = [
+            '-HeCgOiirV4', 'tBpQ1f77PDA', 'h4Jnv-pb6sk', 'A_ZJnKoMoBA', '9CvpeDHgCpo', 
+            'LHUz8vA_wCM', 'bIGoN8_vv_Y', 'npQwX2X3WBE', 'qLQ0PZ-Zwc8', 'bjxfcGJM3V4', 
+            'DOzdBjtA9H0', 'qFtiH1bZuJ0', 'FaHMRB30HmA', 'VdAlPCrndT8', 'gebchYvcar2s', 
+            '77GxLUUEcHo', 'bYM8iPn47yE', 'bpxKOOUhLs8', 'y0AaKrZLFQo', 'LVQi3iyx_Hc', 
+            'ElcwzDwdYkA', 'F3VwhAe7Ks0', 'mwooX2qXrwE', 'lAt6qFZby5w', 'Wj1r0bU3pkg', 
+            '5zS9CbU1gxY', 'pO4lvJUwrwk', 'X8wAX8uZHi8', '4AcNJQYb0Rw', '6170iawsQHE', 
+            'Md-lRIvg27U', 'qWSh3b3V6dc', 'A4ldE3PmnE8', 'knA4zVaDrnk', 'Hd65xQn5tCw', 
+            'eClVrSAVTMo', 'ZFiMA2tfNjg', 'IAWt359KMn8'
+        ];
+
+        const drinks = [
+            "Tequila Shot 🌵", "Gin Tonic 🍸", "Absinthe 🧚", "Vodka Skull 💀", "Neon Martini 🍸", "Whisky Neat 🥃", "Dark Lager 🍺", "Bloody Mary 🍅", "Rum Punch 🍹", "Punk Juice 🧪", "Static Wine 🍷", "Cyber Beer 🍺", "Margarita 🧂", "Negroni 🍊", "Old Fashioned 🧊", "Black Russian ☕", "Moscow Mule 🦄", "Sake Bomb 💣", "Cachaça 🍋", "Jäger Shot 🦌", "Mojito 🍃", "Cosmopolitan 💅", "Mai Tai 🗿", "Sidecar 🏎️", "Blue Lagoon 🌊", "Zombie 🧟", "Pina Colada 🥥", "White Lady 👰", "Manhattan 🏙️", "Paloma 🕊️", "Dark & Stormy ⛈️", "Vesper 🕵️", "Gimlet 🔫", "Caipirinha 🇧🇷", "Aperol Spritz 🍊", "B-52 ✈️", "Rusty Nail 🔨", "Death in the Afternoon ☠️"
+        ];
+
+        let currentActiveIndex = 0;
+        let isSequential = false;
+
+        // Injeta os vídeos na grade
+        const container = document.getElementById('playlist');
+        videoIds.forEach((id, index) => {
+            const box = document.createElement('div');
+            box.className = 'video-box';
+            box.id = `box-${index}`;
+            box.innerHTML = `
+                <span class="drink-name">${drinks[index]}</span>
+                <div class="video-wrapper">
+                    <iframe id="player-${index}" 
+                        src="https://www.youtube.com/embed/${id}?enablejsapi=1&rel=0" 
+                        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen
+                        loading="lazy">
+                    </iframe>
+                </div>
+            `;
+            container.appendChild(box);
+        });
+
+        // Função para parar TODOS os vídeos menos um
+        function stopAllOthers(exceptionIndex) {
+            videoIds.forEach((_, index) => {
+                if (index !== exceptionIndex) {
+                    const iframe = document.getElementById(`player-${index}`);
+                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    document.getElementById(`box-${index}`).classList.remove('highlight');
+                }
+            });
+        }
+
+        // Ação Global (Play/Stop nos botões giratórios)
+        function globalAction(action) {
+            const iframe = document.getElementById(`player-${currentActiveIndex}`);
+            if (action === 'play') {
+                stopAllOthers(currentActiveIndex);
+                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                document.getElementById(`box-${currentActiveIndex}`).classList.add('highlight');
+            } else {
+                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+        }
+
+        // Mudar de faixa (Next/Prev)
+        function changeTrack(direction) {
+            stopAllOthers(-1); // Para tudo
+            currentActiveIndex = (currentActiveIndex + direction + videoIds.length) % videoIds.length;
+            
+            const targetBox = document.getElementById(`box-${currentActiveIndex}`);
+            targetBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            globalAction('play');
+        }
+
+        // Função "ALL 38" - Toca em sequência
+        function playAllSequential() {
+            isSequential = true;
+            currentActiveIndex = 0;
+            // Substituído alert por um aviso menos intrusivo
+            const warning = document.createElement('div');
+            warning.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: black; color: var(--neon-yellow); padding: 15px; border: 2px solid var(--neon-yellow); z-index: 9999; text-align: center; max-width: 90%;';
+            warning.innerHTML = '<strong>SISTEMA DE SEQUÊNCIA ATIVADO</strong><br>OS 38 DRINKS SERÃO SERVIDOS UM APÓS O OUTRO.';
+            document.body.appendChild(warning);
+            setTimeout(() => warning.remove(), 2000);
+            
+            changeTrack(0);
+        }
+
+        // Listener para detectar cliques manuais nos Iframes e parar os outros
+        window.addEventListener('blur', function() {
+            // Pequeno delay para detectar qual player ganhou foco
+            setTimeout(() => {
+                const activeEl = document.activeElement;
+                if (activeEl.tagName === 'IFRAME') {
+                    const id = parseInt(activeEl.id.split('-')[1]);
+                    currentActiveIndex = id;
+                    stopAllOthers(id);
+                    document.getElementById(`box-${id}`).classList.add('highlight');
+                }
+            }, 500);
+        });
+
+        // Adicionar suporte a toque para melhor experiência mobile
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
