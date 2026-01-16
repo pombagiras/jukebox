@@ -307,9 +307,9 @@ Quer adicionar um drink novo? Encontrou um bug no bar?
 
 **Abra uma issue** ou **mande um PR** do seu bar favorito!
 
-🍸 **Discord**: [Void Bar Community](#)  
-🥃 **Twitter**: [@NeonBarJukebox](#)  
-🍺 **Email**: bartender@voidbar.void
+🍸 **Discord**: [https://discord.gg/gWZP8R7Dqu](#)  
+🥃 **Twitter**: [@PambuNjila](#)  
+🍺 **Email**: almasdepombagiras@gmail.com
 
 ---
 
